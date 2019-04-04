@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="概述阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始 类、接口先看下ArrayList类的继承情况 12public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;        implement">
+<meta name="description" content="概述阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ArrayList源码解析">
 <meta property="og:url" content="http://yoursite.com/2019/04/03/ArrayList源码解析/index.html">
 <meta property="og:site_name" content="大湖道场">
-<meta property="og:description" content="概述阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始 类、接口先看下ArrayList类的继承情况 12public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;        implement">
+<meta property="og:description" content="概述阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-04T06:58:03.351Z">
+<meta property="og:updated_time" content="2019-04-04T07:03:11.312Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ArrayList源码解析">
-<meta name="twitter:description" content="概述阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始 类、接口先看下ArrayList类的继承情况 12public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;        implement">
+<meta name="twitter:description" content="概述阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始">
 
 
 
@@ -342,6 +342,7 @@
 
       
         <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始</p>
+<a id="more"></a>
 <h4 id="类、接口"><a href="#类、接口" class="headerlink" title="类、接口"></a>类、接口</h4><p>先看下ArrayList类的继承情况</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayList</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractList</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">        <span class="keyword">implements</span> <span class="title">List</span>&lt;<span class="title">E</span>&gt;, <span class="title">RandomAccess</span>, <span class="title">Cloneable</span>, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span></span></span><br></pre></td></tr></table></figure>
 <p><code>Cloneable, java.io.Serializable</code>两个接口是JDK1.1版本就提供的抽象，代表类的克隆和序列化特性，<code>RandomAccess</code>是标记类是否能随机访问，其中并没有定义接口方法，而是作为一种接口标识，在其他地方做判断使用，如<code>Object.clone()</code>中就会检查是否object实现了<code>Cloneable</code>接口，此处不过多介绍，我们重点看下<code>AbstractList,List&lt;E&gt;</code>。</p>
