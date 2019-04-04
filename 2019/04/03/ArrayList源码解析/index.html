@@ -79,13 +79,17 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="大湖道场">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="概述阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始 类、接口先看下ArrayList类的继承情况 12public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;        implement">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ArrayList源码解析">
+<meta property="og:url" content="http://yoursite.com/2019/04/03/ArrayList源码解析/index.html">
 <meta property="og:site_name" content="大湖道场">
+<meta property="og:description" content="概述阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始 类、接口先看下ArrayList类的继承情况 12public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;        implement">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-04T06:58:03.351Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="大湖道场">
+<meta name="twitter:title" content="ArrayList源码解析">
+<meta name="twitter:description" content="概述阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始 类、接口先看下ArrayList类的继承情况 12public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;        implement">
 
 
 
@@ -115,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/">
+  <link rel="canonical" href="http://yoursite.com/2019/04/03/ArrayList源码解析/">
 
 
 
 
 
-  <title>大湖道场</title>
+  <title>ArrayList源码解析 | 大湖道场</title>
   
 
 
@@ -140,8 +144,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -234,9 +237,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -266,9 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/03/ArrayList源码解析/" itemprop="url">ArrayList源码解析</a></h1>
+          <h1 class="post-title" itemprop="name headline">ArrayList源码解析</h1>
         
 
         <div class="post-meta">
@@ -340,9 +341,7 @@
       
 
       
-        
-          
-            <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始</p>
+        <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>阅读源码是每一个技术人的修炼，差别是多少的问题。从今天开始，启动JDK源码阅读工程，针对JDK中常用的类进行源码解析，计划每周一篇。第一篇从最熟悉使用最频繁的集合类：ArrayList开始</p>
 <h4 id="类、接口"><a href="#类、接口" class="headerlink" title="类、接口"></a>类、接口</h4><p>先看下ArrayList类的继承情况</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayList</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractList</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">        <span class="keyword">implements</span> <span class="title">List</span>&lt;<span class="title">E</span>&gt;, <span class="title">RandomAccess</span>, <span class="title">Cloneable</span>, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span></span></span><br></pre></td></tr></table></figure>
 <p><code>Cloneable, java.io.Serializable</code>两个接口是JDK1.1版本就提供的抽象，代表类的克隆和序列化特性，<code>RandomAccess</code>是标记类是否能随机访问，其中并没有定义接口方法，而是作为一种接口标识，在其他地方做判断使用，如<code>Object.clone()</code>中就会检查是否object实现了<code>Cloneable</code>接口，此处不过多介绍，我们重点看下<code>AbstractList,List&lt;E&gt;</code>。</p>
@@ -397,8 +396,6 @@
 <p>JDK1.8中<code>ArrayList</code>改动很多，因为jdk大大增强了集合的并行、流失处理特性，<code>ArrayList</code>中实现了一些细节，比如<code>ArrayListSpliterator</code>等。此处内容较多，以后单独开篇介绍。</p>
 <h4 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h4><p>这是第一篇源码分析的博客，内容太过简陋，很多地方并没有解释透彻，也是因为自身知识储备不足，以后弄明白会再来更新此文章。</p>
 
-          
-        
       
     </div>
     
@@ -415,132 +412,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/22/第一篇博文/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="道长">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大湖道场">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/22/第一篇博文/" itemprop="url">第一篇博文</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-22T15:40:23+08:00">
-                2019-03-22
-              </time>
+              <a href="/2019/03/22/第一篇博文/" rel="next" title="第一篇博文">
+                <i class="fa fa-chevron-left"></i> 第一篇博文
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>折腾好久，还是决定使用Hexo搭配Pages服务方式来做自己的博客，以后就可以专注写文章而不用费心力去管理服务器等琐事了</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -550,10 +443,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -561,6 +455,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -581,8 +479,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -633,6 +540,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类、接口"><span class="nav-number">2.</span> <span class="nav-text">类、接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构造方法"><span class="nav-number">3.</span> <span class="nav-text">构造方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#常用API"><span class="nav-number">4.</span> <span class="nav-text">常用API</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#结尾"><span class="nav-number">5.</span> <span class="nav-text">结尾</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -766,6 +689,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
